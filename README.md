@@ -35,4 +35,6 @@ Please check ```[telegram].[dbo].[commands]``` table to learn how to vonfigure n
 6. Setup monitoring. Please check ```[telegram].[monitor].[threshold]``` to change threshold for alerts
 
 
-Please do not hesitate to address us in case of questions if any: gleberof @ gmail.com, efremovfedorofficial @ gmail.com
+Please do not hesitate to address us in case of questions if any: 
+* gleberof @ gmail.com
+* efremovfedorofficial @ gmail.com

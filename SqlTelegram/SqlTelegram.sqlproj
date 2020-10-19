@@ -1,0 +1,224 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>SqlTelegram</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{e493f856-7bb1-4a96-87cc-d3ff25f458f1}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql140DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>SqlTelegram</RootNamespace>
+    <AssemblyName>SqlTelegram</AssemblyName>
+    <ModelCollation>1033, CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <PermissionSet>UNSAFE</PermissionSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="CLR" />
+    <Folder Include="monitor\" />
+    <Folder Include="monitor\Tables\" />
+    <Folder Include="dbo\" />
+    <Folder Include="dbo\Functions\" />
+    <Folder Include="dbo\Stored Procedures\" />
+    <Folder Include="monitor\Stored Procedures\" />
+    <Folder Include="Assemblies\" />
+    <Folder Include="Security\" />
+    <Folder Include="dbo\Tables\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="mscorlib" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\..\source\repos\SQL_telegram\SqlTelegram\dlls\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization.Formatters.Soap">
+      <HintPath>Assemblies\System.Runtime.Serialization.Formatters.Soap.dll</HintPath>
+      <SqlAssemblyName>System.Runtime.Serialization.Formatters.Soap</SqlAssemblyName>
+      <IsModelAware>True</IsModelAware>
+      <GenerateSqlClrDdl>False</GenerateSqlClrDdl>
+      <SqlOwnerName>dbo</SqlOwnerName>
+      <SqlPermissionSet>UNSAFE</SqlPermissionSet>
+      <IsVisible>False</IsVisible>
+    </Reference>
+    <Reference Include="System.Messaging">
+      <HintPath>Assemblies\System.Messaging.dll</HintPath>
+      <SqlAssemblyName>System.Messaging</SqlAssemblyName>
+      <IsModelAware>True</IsModelAware>
+      <GenerateSqlClrDdl>False</GenerateSqlClrDdl>
+      <SqlOwnerName>dbo</SqlOwnerName>
+      <SqlPermissionSet>UNSAFE</SqlPermissionSet>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <HintPath>Assemblies\System.Drawing.dll</HintPath>
+      <SqlAssemblyName>System.Drawing</SqlAssemblyName>
+      <IsModelAware>True</IsModelAware>
+      <GenerateSqlClrDdl>False</GenerateSqlClrDdl>
+      <SqlOwnerName>dbo</SqlOwnerName>
+      <SqlPermissionSet>UNSAFE</SqlPermissionSet>
+      <IsVisible>False</IsVisible>
+    </Reference>
+    <Reference Include="System.DirectoryServices">
+      <HintPath>Assemblies\System.DirectoryServices.dll</HintPath>
+      <SqlAssemblyName>System.DirectoryServices</SqlAssemblyName>
+      <IsModelAware>True</IsModelAware>
+      <GenerateSqlClrDdl>False</GenerateSqlClrDdl>
+      <SqlOwnerName>dbo</SqlOwnerName>
+      <SqlPermissionSet>UNSAFE</SqlPermissionSet>
+      <IsVisible>False</IsVisible>
+    </Reference>
+    <Reference Include="System.Configuration.Install">
+      <HintPath>Assemblies\System.Configuration.Install.dll</HintPath>
+      <SqlAssemblyName>System.Configuration.Install</SqlAssemblyName>
+      <IsModelAware>True</IsModelAware>
+      <GenerateSqlClrDdl>False</GenerateSqlClrDdl>
+      <SqlOwnerName>dbo</SqlOwnerName>
+      <SqlPermissionSet>UNSAFE</SqlPermissionSet>
+      <IsVisible>False</IsVisible>
+    </Reference>
+    <Reference Include="Accessibility">
+      <HintPath>Assemblies\Accessibility.dll</HintPath>
+      <SqlAssemblyName>Accessibility</SqlAssemblyName>
+      <IsModelAware>True</IsModelAware>
+      <GenerateSqlClrDdl>False</GenerateSqlClrDdl>
+      <SqlOwnerName>dbo</SqlOwnerName>
+      <SqlPermissionSet>UNSAFE</SqlPermissionSet>
+      <IsVisible>False</IsVisible>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <HintPath>Assemblies\System_1.Windows.Forms.dll</HintPath>
+      <SqlAssemblyName>System.Windows.Forms</SqlAssemblyName>
+      <IsModelAware>True</IsModelAware>
+      <GenerateSqlClrDdl>False</GenerateSqlClrDdl>
+      <SqlOwnerName>dbo</SqlOwnerName>
+      <SqlPermissionSet>UNSAFE</SqlPermissionSet>
+      <IsVisible>False</IsVisible>
+    </Reference>
+    <Reference Include="System.ServiceModel.Internals">
+      <HintPath>Assemblies\System_1.ServiceModel.Internals.dll</HintPath>
+      <SqlAssemblyName>System.ServiceModel.Internals</SqlAssemblyName>
+      <IsModelAware>True</IsModelAware>
+      <GenerateSqlClrDdl>False</GenerateSqlClrDdl>
+      <SqlOwnerName>dbo</SqlOwnerName>
+      <SqlPermissionSet>UNSAFE</SqlPermissionSet>
+      <IsVisible>False</IsVisible>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization">
+      <HintPath>Assemblies\System_1.Runtime.Serialization.dll</HintPath>
+      <SqlAssemblyName>System.Runtime.Serialization</SqlAssemblyName>
+      <IsModelAware>True</IsModelAware>
+      <GenerateSqlClrDdl>False</GenerateSqlClrDdl>
+      <SqlOwnerName>dbo</SqlOwnerName>
+      <SqlPermissionSet>UNSAFE</SqlPermissionSet>
+      <IsVisible>False</IsVisible>
+    </Reference>
+    <Reference Include="SMDiagnostics">
+      <HintPath>Assemblies\SMDiagnostics_1.dll</HintPath>
+      <SqlAssemblyName>SMDiagnostics</SqlAssemblyName>
+      <IsModelAware>True</IsModelAware>
+      <GenerateSqlClrDdl>False</GenerateSqlClrDdl>
+      <SqlOwnerName>dbo</SqlOwnerName>
+      <SqlPermissionSet>UNSAFE</SqlPermissionSet>
+      <IsVisible>False</IsVisible>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CLR\HttpResult.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CLR\ClrHttp.cs" />
+    <Compile Include="CLR\HttpLayer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="monitor\Tables\threshold.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SendSticker.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SendMessage.sql" />
+    <Build Include="dbo\Stored Procedures\usp_HttpPost.sql" />
+    <Build Include="dbo\Stored Procedures\usp_HttpGet.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetChatId.sql" />
+    <Build Include="monitor\Stored Procedures\usp_check_lock_wait.sql" />
+    <Build Include="monitor\Stored Procedures\usp_check_cpu_usage.sql" />
+    <Build Include="monitor\Stored Procedures\usp_check_disk_free_space.sql" />
+    <Build Include="monitor\Stored Procedures\usp_check_disk_latency.sql" />
+    <Build Include="monitor\Stored Procedures\usp_check_job_failed.sql" />
+    <Build Include="Security\monitor.sql" />
+    <Build Include="monitor\Tables\progress.sql" />
+    <Build Include="monitor\Stored Procedures\usp_get_top_queries.sql" />
+    <Build Include="monitor\Stored Procedures\usp_get_progress.sql" />
+    <Build Include="monitor\Stored Procedures\usp_get_job_execution_stats.sql" />
+    <Build Include="dbo\Tables\settings.sql" />
+    <Build Include="dbo\Tables\commands.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SQL2string.sql" />
+    <Build Include="dbo\Stored Procedures\usp_Message2Command.sql" />
+    <Build Include="dbo\Stored Procedures\usp_SQL2string.sql" />
+    <Build Include="dbo\Stored Procedures\usp_Message2Command.sql" />
+    <Build Include="dbo\Stored Procedures\usp_HttpPost.sql" />
+    <Build Include="dbo\Stored Procedures\usp_HttpGet.sql" />
+    <Build Include="dbo\Stored Procedures\usp_get_chat_updates.sql" />
+    <Build Include="dbo\Stored Procedures\usp_get_settings.sql" />
+    <Build Include="monitor\Tables\disk_latency.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assemblies\System.Windows.Forms.dll" />
+    <None Include="Assemblies\System.ServiceModel.Internals.dll" />
+    <None Include="Assemblies\System.Runtime.Serialization.Formatters.Soap.dll" />
+    <None Include="Assemblies\System.Runtime.Serialization.dll" />
+    <None Include="Assemblies\System.Messaging.dll" />
+    <None Include="Assemblies\System.Drawing.dll" />
+    <None Include="Assemblies\System.DirectoryServices.dll" />
+    <None Include="Assemblies\System.Configuration.Install.dll" />
+    <None Include="Assemblies\SMDiagnostics.dll" />
+    <None Include="Assemblies\Newtonsoft.Json.dll" />
+    <None Include="Assemblies\Accessibility.dll" />
+    <None Include="Assemblies\SqlTelegram.dll" />
+    <None Include="Assemblies\System_1.Windows.Forms.dll" />
+    <None Include="Assemblies\System_1.ServiceModel.Internals.dll" />
+    <None Include="Assemblies\System_1.Runtime.Serialization.dll" />
+    <None Include="Assemblies\SMDiagnostics_1.dll" />
+  </ItemGroup>
+</Project>

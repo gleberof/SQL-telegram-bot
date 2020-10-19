@@ -9,7 +9,7 @@ To send and receive messages to/from telegram bot natively with MS SQL server (b
 
 
 # How to install
-1. Clone repo ```git clone https://github.com/gleberof/SQL-telagram-bot.git```
+1. Clone repo ```git clone https://github.com/gleberof/SQL-telegram-bot.git```
 2. Run setup.sql (new db \[telegram\] with all nessesaey prcedures will be created)
 3. Send message to your bot directly in telegram (it will helps to identify your chat ID). If you going to use bot within group - you need to setup bot as one of the admins of this group. 
 4. Open ```Configure.sql```. Set bot_token given by [Bot Father](https://telegram.me/botfather). It will automatically assign chat_id from last message to the bot or chat.

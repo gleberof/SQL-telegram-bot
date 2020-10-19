@@ -32,7 +32,7 @@ Please check ```[telegram].[dbo].[commands]``` table to learn how to vonfigure n
 
 ![select](https://github.com/gleberof/SQL-telagram-bot/blob/main/images/select.gif?raw=true)
 
-6. Setup monitoring. Please check ```[telegram].[monitor].[threshold]``` to change terashholds for alerts
+6. Setup monitoring. Please check ```[telegram].[monitor].[threshold]``` to change threshold for alerts
 
 
 Please do not hesitate to address us in case of questions if any: gleberof @ gmail.com, dsdread @ gmail.com

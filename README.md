@@ -1,7 +1,7 @@
 # SQL telegram bot. 
 
 # The purpose.
-To send and receive messages to/from telegram bot with MS SQL server (by stored procedures)
+To send and receive messages to/from telegram bot natively with MS SQL server (by stored procedures)
 
 # Prerequsites
 * SQL Server 2016 or higher
@@ -9,20 +9,15 @@ To send and receive messages to/from telegram bot with MS SQL server (by stored 
 
 
 # How to install
-1. Clone repo ```git clone ```
-2. Run setup.sql (new db \[NAME\] with all nessesaey prcedures will be created)
-3. Set bot_token given by [Bot Father](https://telegram.me/botfather) How?
+1. Clone repo ```git clone https://github.com/gleberof/SQL-telagram-bot.git```
+2. Run setup.sql (new db \[telegram\] with all nessesaey prcedures will be created)
+3. Send message to your bot directly in telegram (it will helps to identify your chat ID). If you going to use bot within group - you need to setup bot as one of the admins of this group. 
+4. Open ```Configure.sql```. Set bot_token given by [Bot Father](https://telegram.me/botfather). It will automatically assign chat_id from last message to the bot or chat.
 
 
 # How to use
-1. Know you telegram ID 
-    * Send a message via telegram to your bot
-    * Run [].[get_last_id] - to get your ID (please remeber it somewhere)
-2. Send a message from SQL by [].[send_message] [yourID] (int), N'My message to bot'
-
-# TODO
-1. Listen cycle 
-2. Progress bar
-3. Execute queries and return results
-4. Send pictures
-5. Merge with monitoring
+1. Send a message from SQL by ```EXEC [dbo].[usp_SendMessage] @message = N'Hello World!'```
+2. Setup commands
+3. Setup progrress bar for backups
+4. Execute sql selects
+5. Setup monitoring

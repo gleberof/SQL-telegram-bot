@@ -1,6 +1,6 @@
-# SQL telegram bot. 
+# SQL telegram bot
 
-# The purpose.
+# The purpose
 To send and receive messages to/from telegram bot natively with MS SQL server (by stored procedures)
 
 # Prerequsites

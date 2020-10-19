@@ -17,16 +17,22 @@ To send and receive messages to/from telegram bot natively with MS SQL server (b
 
 # How to use
 1. Send a message from SQL by ```EXEC [dbo].[usp_SendMessage] @message = N'Hello World!'```
-2. Setup commands
+2. Run ```Jobs.sql``` - to enbale jobs 
+3. Setup commands. 
+
+Please check ```[telegram].[dbo].[commands]``` table to learn how to vonfigure new commands (we setup few during configurations)
 
 ![commands](https://github.com/gleberof/SQL-telagram-bot/blob/main/images/command.gif?raw=true)
 
-3. Setup progress bar for backups
+4. Setup progress bar for backups. It's almost confugured and run by job (please try backup on you server)
 
 ![backup2](https://github.com/gleberof/SQL-telagram-bot/blob/main/images/backup2.gif?raw=true)
 
-4. Execute sql selects
+5. Execute sql selects. It's almost ready to execute commands - put ```*``` symbol before select.
 
-![backup2](https://github.com/gleberof/SQL-telagram-bot/blob/main/images/select.gif?raw=true)
+![select](https://github.com/gleberof/SQL-telagram-bot/blob/main/images/select.gif?raw=true)
 
-5. Setup monitoring
+6. Setup monitoring. Please check ```[telegram].[monitor].[threshold]``` to change terashholds for alerts
+
+
+Please do not hesitate to address us in case of questions if any: gleberof @ gmail.com, dsdread @ gmail.com

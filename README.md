@@ -21,7 +21,7 @@ To send and receive messages to/from telegram bot natively with MS SQL server (b
 
 ![commands](https://github.com/gleberof/SQL-telagram-bot/blob/main/images/command.gif?raw=true)
 
-3. Setup progrress bar for backups
+3. Setup progress bar for backups
 
 ![backup2](https://github.com/gleberof/SQL-telagram-bot/blob/main/images/backup2.gif?raw=true)
 

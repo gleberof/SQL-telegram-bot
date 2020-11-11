@@ -4,3 +4,7 @@ AS EXTERNAL NAME [SqlTelegram].[SqlTelegram.ClrHttp].[Message2Command]
 
 
 
+
+
+
+

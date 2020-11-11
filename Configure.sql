@@ -4,8 +4,9 @@ GO
 -- Put bot token here
 DECLARE @bot_token nvarchar(max) = N'';
 
-INSERT [dbo].[settings] ([name], [value], [value_str]) VALUES (N'bot_token', NULL, @bot_token)
+INSERT [dbo].[settings] ([name], [value], [value_str], [value_date]) VALUES (N'bot_token', NULL, @bot_token, NULL)
 GO
+
 
 -- Send message in chat
 DECLARE @chat_id bigint;
@@ -13,25 +14,27 @@ DECLARE @chat_id bigint;
 EXEC [dbo].[usp_GetChatId]
   @chat_id = @chat_id OUTPUT;
 
-INSERT [dbo].[settings] ([name], [value], [value_str]) VALUES (N'chat_id', -@chat_id, NULL)
+INSERT [dbo].[settings] ([name], [value], [value_str], [value_date]) VALUES (N'chat_id', @chat_id, NULL, NULL)
 GO
 
 
-INSERT [dbo].[settings] ([name], [value], [value_str]) VALUES (N'col_width', 10, NULL)
+INSERT [dbo].[settings] ([name], [value], [value_str], [value_date]) VALUES (N'col_width', 10, NULL, NULL)
 GO
-INSERT [dbo].[settings] ([name], [value], [value_str]) VALUES (N'http_headers', NULL, N'<Header Name="Content-Type" Value="application/json" />')
+INSERT [dbo].[settings] ([name], [value], [value_str], [value_date]) VALUES (N'http_headers', NULL, N'<Header Name="Content-Type" Value="application/json" />', NULL)
 GO
-INSERT [dbo].[settings] ([name], [value], [value_str]) VALUES (N'last_update_id', 0, NULL)
+INSERT [dbo].[settings] ([name], [value], [value_str], [value_date]) VALUES (N'last_check_date', NULL, NULL, NULL)
 GO
-INSERT [dbo].[settings] ([name], [value], [value_str]) VALUES (N'limit', 10, NULL)
+INSERT [dbo].[settings] ([name], [value], [value_str], [value_date]) VALUES (N'last_update_id', 100885916, NULL, NULL)
 GO
-INSERT [dbo].[settings] ([name], [value], [value_str]) VALUES (N'num_cols', 8, NULL)
+INSERT [dbo].[settings] ([name], [value], [value_str], [value_date]) VALUES (N'limit', 10, NULL, NULL)
 GO
-INSERT [dbo].[settings] ([name], [value], [value_str]) VALUES (N'num_rows', 8, NULL)
+INSERT [dbo].[settings] ([name], [value], [value_str], [value_date]) VALUES (N'num_cols', 8, NULL, NULL)
 GO
-INSERT [dbo].[settings] ([name], [value], [value_str]) VALUES (N'offset', 0, NULL)
+INSERT [dbo].[settings] ([name], [value], [value_str], [value_date]) VALUES (N'num_rows', 8, NULL, NULL)
 GO
-INSERT [dbo].[settings] ([name], [value], [value_str]) VALUES (N'update_timeout', 2, NULL)
+INSERT [dbo].[settings] ([name], [value], [value_str], [value_date]) VALUES (N'offset', 0, NULL, NULL)
+GO
+INSERT [dbo].[settings] ([name], [value], [value_str], [value_date]) VALUES (N'update_timeout', 2, NULL, NULL)
 GO
 
 
@@ -62,7 +65,8 @@ INSERT [dbo].[commands] ([command], [query], [description], [columns_width]) VAL
 GO
 INSERT [dbo].[commands] ([command], [query], [description], [columns_width]) VALUES (N'version', N'SELECT @@VERSION', N'Get SQL Server version', N'600')
 GO
-
+INSERT [dbo].[commands] ([command], [query], [description], [columns_width]) VALUES (N'request_access', N'EXEC [dbo].[usp_request_access]', N'Request access to use commands', N'12')
+GO
 
 
 INSERT [monitor].[threshold] ([counter], [threshold], [type]) VALUES (N'cpu_usage', CAST(80.00 AS Decimal(18, 2)), N'percent')

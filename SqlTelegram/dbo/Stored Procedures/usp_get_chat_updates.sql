@@ -24,7 +24,8 @@ BEGIN
     ,@message_url nvarchar(max)
     ,@message nvarchar(max)
     ,@query nvarchar(max)
-    ,@update_id bigint;	  
+    ,@update_id bigint
+    ,@user_id bigint;	
 
   EXEC [dbo].[usp_get_settings]
     @url = @url OUTPUT 
@@ -78,17 +79,26 @@ BEGIN
   SELECT TOP (1) 
     @text = [text]
     ,@update_id = [update_id]
+    ,@user_id = [user_id]
   FROM OPENJSON (@response, N'$.result')
   WITH 
   (
     [text] nvarchar(max) N'$.message.text'
     ,[chat_id] bigint N'$.message.chat.id'
-    ,[update_id] bigint N'$.update_id'   
+    ,[update_id] bigint N'$.update_id' 
+    ,[user_id] bigint N'$.message.from.id'
   )
   WHERE [chat_id] = @chat_id
   ORDER BY [update_id] DESC;
 
   IF LEFT(@text, 1) = N'*'
+  AND EXISTS 
+  (
+    SELECT 1
+    FROM [dbo].[users] [u]
+    WHERE [u].[user_id] = @user_id
+      AND [u].[authorized] = 1
+  )
   BEGIN
 
     SET @query = RIGHT(@text, LEN(@text) - 1);

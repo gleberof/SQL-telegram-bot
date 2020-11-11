@@ -55,6 +55,7 @@ namespace SqlTelegram
         {
 
             string result = "";
+            response = (SqlString)"";
             Dictionary<string, object> obj = JObject.FromObject(JsonConvert.DeserializeObject(json.ToString())).ToObject<Dictionary<string, object>>();
 
             JArray replies = (JArray)obj["result"];
@@ -94,27 +95,33 @@ namespace SqlTelegram
             {
                 SqlString txt_query = "";
                 SqlString columns_width = "";
-                using (SqlConnection connection = new SqlConnection("context connection=true"))
-                {
-                    connection.Open();
-                    //SqlCommand sqlCommand = new SqlCommand("SELECT [query] FROM [dbo].[commands] WHERE [command] = @command", connection);
-                    //sqlCommand.Parameters.AddWithValue("@command", result);
-                    //txt_query = (SqlString)(string)sqlCommand.ExecuteScalar();
 
-                    SqlCommand sqlCommand = new SqlCommand("SELECT [query], [columns_width] FROM [dbo].[commands] WHERE [command] = @command", connection);
-                    sqlCommand.Parameters.AddWithValue("@command", result);
-                    SqlDataReader reader = sqlCommand.ExecuteReader();
-                    while (reader.Read())
+                try
+                {
+                    using (SqlConnection connection = new SqlConnection("context connection=true"))
                     {
-                        txt_query = reader["query"].ToString();
-                        columns_width = reader["columns_width"].ToString();
+                        connection.Open();
+                        //SqlCommand sqlCommand = new SqlCommand("SELECT [query] FROM [dbo].[commands] WHERE [command] = @command", connection);
+                        //sqlCommand.Parameters.AddWithValue("@command", result);
+                        //txt_query = (SqlString)(string)sqlCommand.ExecuteScalar();
+
+                        SqlCommand sqlCommand = new SqlCommand("SELECT [query], [columns_width] FROM [dbo].[commands] WHERE [command] = @command", connection);
+                        sqlCommand.Parameters.AddWithValue("@command", result);
+                        SqlDataReader reader = sqlCommand.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            txt_query = reader["query"].ToString();
+                            columns_width = reader["columns_width"].ToString();
+                        }
+                        reader.Close();
                     }
-                    reader.Close();
+                    if (txt_query != "")
+                    {
+                        SQL2string(txt_query, 10, 6, 10, columns_width, out response);
+                    }
                 }
-                SQL2string(txt_query, 10, 6, 10, columns_width, out response);
+                catch { }
             }
-            else
-                response = (SqlString)"";
         }
 
         [SqlProcedure]

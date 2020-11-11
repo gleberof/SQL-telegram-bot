@@ -5,11 +5,19 @@ BEGIN
 
   DECLARE 
     @message nvarchar(max)
-    ,@threshold bigint;
+    ,@threshold bigint
+    ,@check_date datetime
+    ,@last_check_date datetime;
 
   SELECT @threshold = [t].[threshold]
   FROM [monitor].[threshold] [t]
-  WHERE [t].[counter] = N'lock'
+  WHERE [t].[counter] = N'lock';
+
+  SET @check_date = GETDATE();
+  
+  SELECT @last_check_date = [s].[value_date]
+  FROM [dbo].[settings] [s]
+  WHERE [s].[name] = N'job_failed_last_check_date';
 
   SELECT @message = STUFF
   ((
@@ -22,11 +30,16 @@ BEGIN
     INNER JOIN [msdb].[dbo].[sysjobs] [j] ON [j].[job_id] = [h].[job_id]
     INNER JOIN [msdb].[dbo].[sysjobsteps] [s] ON [s].[job_id] = [j].[job_id]
     WHERE [h].[step_id] <> 0
-      AND [msdb].[dbo].[agent_datetime]([h].[run_date], [h].[run_time]) >= DATEADD(minute, -15, GETDATE())
+      AND [msdb].[dbo].[agent_datetime]([h].[run_date], [h].[run_time]) > @last_check_date 
+      AND [msdb].[dbo].[agent_datetime]([h].[run_date], [h].[run_time]) <= @check_date
       AND [h].[run_status] = 0 -- Failure
     FOR XML PATH(N''))
     , 1, 1, N''
   );
+
+  UPDATE [dbo].[settings]
+  SET [value_date] = @check_date
+  WHERE [name] = N'job_failed_last_check_date';
 
   IF @message IS NOT NULL
     EXEC [dbo].[usp_SendMessage]

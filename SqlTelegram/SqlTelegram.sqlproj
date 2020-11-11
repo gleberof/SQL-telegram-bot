@@ -86,14 +86,6 @@
       <SqlPermissionSet>UNSAFE</SqlPermissionSet>
       <IsVisible>False</IsVisible>
     </Reference>
-    <Reference Include="System.Messaging">
-      <HintPath>Assemblies\System.Messaging.dll</HintPath>
-      <SqlAssemblyName>System.Messaging</SqlAssemblyName>
-      <IsModelAware>True</IsModelAware>
-      <GenerateSqlClrDdl>False</GenerateSqlClrDdl>
-      <SqlOwnerName>dbo</SqlOwnerName>
-      <SqlPermissionSet>UNSAFE</SqlPermissionSet>
-    </Reference>
     <Reference Include="System.Drawing">
       <HintPath>Assemblies\System.Drawing.dll</HintPath>
       <SqlAssemblyName>System.Drawing</SqlAssemblyName>
@@ -112,15 +104,6 @@
       <SqlPermissionSet>UNSAFE</SqlPermissionSet>
       <IsVisible>False</IsVisible>
     </Reference>
-    <Reference Include="System.Configuration.Install">
-      <HintPath>Assemblies\System.Configuration.Install.dll</HintPath>
-      <SqlAssemblyName>System.Configuration.Install</SqlAssemblyName>
-      <IsModelAware>True</IsModelAware>
-      <GenerateSqlClrDdl>False</GenerateSqlClrDdl>
-      <SqlOwnerName>dbo</SqlOwnerName>
-      <SqlPermissionSet>UNSAFE</SqlPermissionSet>
-      <IsVisible>False</IsVisible>
-    </Reference>
     <Reference Include="Accessibility">
       <HintPath>Assemblies\Accessibility.dll</HintPath>
       <SqlAssemblyName>Accessibility</SqlAssemblyName>
@@ -131,7 +114,7 @@
       <IsVisible>False</IsVisible>
     </Reference>
     <Reference Include="System.Windows.Forms">
-      <HintPath>Assemblies\System_1.Windows.Forms.dll</HintPath>
+      <HintPath>Assemblies\System_2.Windows.Forms.dll</HintPath>
       <SqlAssemblyName>System.Windows.Forms</SqlAssemblyName>
       <IsModelAware>True</IsModelAware>
       <GenerateSqlClrDdl>False</GenerateSqlClrDdl>
@@ -140,7 +123,7 @@
       <IsVisible>False</IsVisible>
     </Reference>
     <Reference Include="System.ServiceModel.Internals">
-      <HintPath>Assemblies\System_1.ServiceModel.Internals.dll</HintPath>
+      <HintPath>Assemblies\System_2.ServiceModel.Internals.dll</HintPath>
       <SqlAssemblyName>System.ServiceModel.Internals</SqlAssemblyName>
       <IsModelAware>True</IsModelAware>
       <GenerateSqlClrDdl>False</GenerateSqlClrDdl>
@@ -149,7 +132,7 @@
       <IsVisible>False</IsVisible>
     </Reference>
     <Reference Include="System.Runtime.Serialization">
-      <HintPath>Assemblies\System_1.Runtime.Serialization.dll</HintPath>
+      <HintPath>Assemblies\System_2.Runtime.Serialization.dll</HintPath>
       <SqlAssemblyName>System.Runtime.Serialization</SqlAssemblyName>
       <IsModelAware>True</IsModelAware>
       <GenerateSqlClrDdl>False</GenerateSqlClrDdl>
@@ -157,14 +140,39 @@
       <SqlPermissionSet>UNSAFE</SqlPermissionSet>
       <IsVisible>False</IsVisible>
     </Reference>
+    <Reference Include="System.Messaging">
+      <HintPath>Assemblies\System.Messaging.dll</HintPath>
+      <SqlAssemblyName>System.Messaging</SqlAssemblyName>
+      <IsModelAware>True</IsModelAware>
+      <GenerateSqlClrDdl>False</GenerateSqlClrDdl>
+      <SqlOwnerName>dbo</SqlOwnerName>
+      <SqlPermissionSet>UNSAFE</SqlPermissionSet>
+    </Reference>
+    <Reference Include="System.Configuration.Install">
+      <HintPath>Assemblies\System.Configuration.Install.dll</HintPath>
+      <SqlAssemblyName>System.Configuration.Install</SqlAssemblyName>
+      <IsModelAware>True</IsModelAware>
+      <GenerateSqlClrDdl>False</GenerateSqlClrDdl>
+      <SqlOwnerName>dbo</SqlOwnerName>
+      <SqlPermissionSet>UNSAFE</SqlPermissionSet>
+      <IsVisible>False</IsVisible>
+    </Reference>
     <Reference Include="SMDiagnostics">
-      <HintPath>Assemblies\SMDiagnostics_1.dll</HintPath>
+      <HintPath>Assemblies\SMDiagnostics_2.dll</HintPath>
       <SqlAssemblyName>SMDiagnostics</SqlAssemblyName>
       <IsModelAware>True</IsModelAware>
       <GenerateSqlClrDdl>False</GenerateSqlClrDdl>
       <SqlOwnerName>dbo</SqlOwnerName>
       <SqlPermissionSet>UNSAFE</SqlPermissionSet>
       <IsVisible>False</IsVisible>
+    </Reference>
+    <Reference Include="SqlTelegram">
+      <HintPath>Assemblies\SqlTelegram_1.dll</HintPath>
+      <SqlAssemblyName>SqlTelegram</SqlAssemblyName>
+      <IsModelAware>True</IsModelAware>
+      <GenerateSqlClrDdl>False</GenerateSqlClrDdl>
+      <SqlOwnerName>dbo</SqlOwnerName>
+      <SqlPermissionSet>UNSAFE</SqlPermissionSet>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -202,6 +210,10 @@
     <Build Include="dbo\Stored Procedures\usp_get_chat_updates.sql" />
     <Build Include="dbo\Stored Procedures\usp_get_settings.sql" />
     <Build Include="monitor\Tables\disk_latency.sql" />
+    <Build Include="dbo\Tables\users.sql" />
+    <Build Include="dbo\Stored Procedures\usp_request_access.sql" />
+    <Build Include="dbo\Stored Procedures\usp_remove_user.sql" />
+    <Build Include="dbo\Stored Procedures\usp_add_user.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assemblies\System.Windows.Forms.dll" />
@@ -212,13 +224,9 @@
     <None Include="Assemblies\System.Drawing.dll" />
     <None Include="Assemblies\System.DirectoryServices.dll" />
     <None Include="Assemblies\System.Configuration.Install.dll" />
+    <None Include="Assemblies\SqlTelegram.dll" />
     <None Include="Assemblies\SMDiagnostics.dll" />
     <None Include="Assemblies\Newtonsoft.Json.dll" />
     <None Include="Assemblies\Accessibility.dll" />
-    <None Include="Assemblies\SqlTelegram.dll" />
-    <None Include="Assemblies\System_1.Windows.Forms.dll" />
-    <None Include="Assemblies\System_1.ServiceModel.Internals.dll" />
-    <None Include="Assemblies\System_1.Runtime.Serialization.dll" />
-    <None Include="Assemblies\SMDiagnostics_1.dll" />
   </ItemGroup>
 </Project>

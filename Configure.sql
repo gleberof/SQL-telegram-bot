@@ -4,6 +4,8 @@ GO
 -- Put bot token here
 DECLARE @bot_token nvarchar(max) = N'';
 
+SET @bot_token = @bot_token + N'/'
+
 INSERT [dbo].[settings] ([name], [value], [value_str], [value_date]) VALUES (N'bot_token', NULL, @bot_token, NULL)
 GO
 

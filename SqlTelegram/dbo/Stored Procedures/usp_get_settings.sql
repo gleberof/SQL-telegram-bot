@@ -10,6 +10,7 @@
   ,@num_rows bigint = NULL OUTPUT
   ,@num_cols bigint = NULL OUTPUT
   ,@col_width bigint = NULL OUTPUT
+  ,@bot_name nvarchar(max) = NULL OUTPUT
 )
 AS
 BEGIN
@@ -50,6 +51,7 @@ BEGIN
   SELECT 
     @url = [bot_token]
     ,@http_headers = [http_headers]
+    ,@bot_name = [bot_name]
   FROM
   (
     SELECT 
@@ -64,6 +66,7 @@ BEGIN
     (
       [bot_token]
       ,[http_headers]
+      ,[bot_name]
     )
   ) [pvt];
 

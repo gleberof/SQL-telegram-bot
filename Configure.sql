@@ -11,6 +11,9 @@ GO
 
 
 -- Send message in chat
+
+
+-- Get chat_id
 DECLARE @chat_id bigint;
 
 EXEC [dbo].[usp_GetChatId]
@@ -18,6 +21,17 @@ EXEC [dbo].[usp_GetChatId]
 
 INSERT [dbo].[settings] ([name], [value], [value_str], [value_date]) VALUES (N'chat_id', @chat_id, NULL, NULL)
 GO
+
+
+-- Get Bot name
+DECLARE @bot_name nvarchar(max);
+
+EXEC [dbo].[usp_get_bot_name]
+  @bot_name = @bot_name OUTPUT;
+
+INSERT [dbo].[settings] ([name], [value], [value_str], [value_date]) VALUES (N'bot_name', NULL , @bot_name, NULL)
+GO
+
 
 
 INSERT [dbo].[settings] ([name], [value], [value_str], [value_date]) VALUES (N'col_width', 10, NULL, NULL)

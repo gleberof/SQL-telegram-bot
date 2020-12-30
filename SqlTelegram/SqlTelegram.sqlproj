@@ -214,6 +214,7 @@
     <Build Include="dbo\Stored Procedures\usp_request_access.sql" />
     <Build Include="dbo\Stored Procedures\usp_remove_user.sql" />
     <Build Include="dbo\Stored Procedures\usp_add_user.sql" />
+    <Build Include="dbo\Stored Procedures\usp_get_bot_name.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assemblies\System.Windows.Forms.dll" />

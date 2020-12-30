@@ -194,7 +194,8 @@ BEGIN
     ,@message nvarchar(max)
     ,@query nvarchar(max)
     ,@update_id bigint
-    ,@user_id bigint;	
+    ,@user_id bigint
+    ,@bot_name nvarchar(max);	
 
   EXEC [dbo].[usp_get_settings]
     @url = @url OUTPUT 
@@ -205,7 +206,8 @@ BEGIN
     ,@limit = @limit OUTPUT
     ,@num_rows = @num_rows OUTPUT
     ,@num_cols = @num_cols OUTPUT
-    ,@col_width = @col_width OUTPUT;
+    ,@col_width = @col_width OUTPUT
+    ,@bot_name = @bot_name OUTPUT;
 
   SET @offset = ISNULL(@offset + 1, 0);
 
@@ -222,29 +224,6 @@ BEGIN
 	  @response = @response OUTPUT,
 	  @error = @error OUTPUT;
 
-  EXEC [dbo].[usp_Message2Command]
-    @json = @response
-    ,@bot_name = N'sql_tel_bot'
-    ,@chat_id = @chat_id
-    ,@response = @command_response OUTPUT;
-
-  IF @command_response IS NOT NULL
-  BEGIN
-    SET @message_url = CONCAT(@url, N'sendMessage');
-    SET @json_chat = N'{}';
-    SET @json_chat = JSON_MODIFY(@json_chat, '$.text', @command_response);
-    SET @json_chat = JSON_MODIFY(@json_chat, '$.chat_id', @chat_id); 
-    SET @json_chat = JSON_MODIFY(@json_chat, '$.parse_mode', 'Markdown'); 
-
-    EXEC [dbo].[usp_HttpPost]
-      @url = @message_url,
-      @headerXml = @http_headers,
-      @requestBody = @json_chat,
-      @success = @success OUTPUT,
-      @response = @command_response OUTPUT,
-      @error = @error OUTPUT;
-  END;
-
   SELECT TOP (1) 
     @text = [text]
     ,@update_id = [update_id]
@@ -260,39 +239,67 @@ BEGIN
   WHERE [chat_id] = @chat_id
   ORDER BY [update_id] DESC;
 
-  IF LEFT(@text, 1) = N'*'
-  AND EXISTS 
+  IF EXISTS 
   (
     SELECT 1
     FROM [dbo].[users] [u]
     WHERE [u].[user_id] = @user_id
       AND [u].[authorized] = 1
   )
+  OR @text LIKE '/request_access%'
   BEGIN
 
-    SET @query = RIGHT(@text, LEN(@text) - 1);
+    EXEC [dbo].[usp_Message2Command]
+      @json = @response
+      ,@bot_name = @bot_name
+      ,@chat_id = @chat_id
+      ,@response = @command_response OUTPUT;
 
-    EXEC [dbo].[usp_SQL2string]
-	    @SqlString = @query,
-	    @num_rows = @num_rows,
-	    @num_cols = @num_cols,
-      @col_width = @col_width,
-      @list_width = N'',
-      @response = @message OUTPUT
+    IF @command_response IS NOT NULL
+    BEGIN
+      SET @message_url = CONCAT(@url, N'sendMessage');
+      SET @json_chat = N'{}';
+      SET @json_chat = JSON_MODIFY(@json_chat, '$.text', @command_response);
+      SET @json_chat = JSON_MODIFY(@json_chat, '$.chat_id', @chat_id); 
+      SET @json_chat = JSON_MODIFY(@json_chat, '$.parse_mode', 'Markdown'); 
 
-    SET @message_url = CONCAT(@url, N'sendMessage');
-    SET @json_chat = N'{}';
-    SET @json_chat = JSON_MODIFY(@json_chat, '$.text', @message);
-    SET @json_chat = JSON_MODIFY(@json_chat, '$.chat_id', @chat_id); 
-    SET @json_chat = JSON_MODIFY(@json_chat, '$.parse_mode', 'Markdown'); 
+      EXEC [dbo].[usp_HttpPost]
+        @url = @message_url,
+        @headerXml = @http_headers,
+        @requestBody = @json_chat,
+        @success = @success OUTPUT,
+        @response = @command_response OUTPUT,
+        @error = @error OUTPUT;
+    END;
 
-    EXEC [dbo].[usp_HttpPost]
-      @url = @message_url,
-      @headerXml = @http_headers,
-      @requestBody = @json_chat,
-      @success = @success OUTPUT,
-      @response = @response OUTPUT,
-      @error = @error OUTPUT;
+    IF LEFT(@text, 1) = N'*'
+    BEGIN
+
+      SET @query = RIGHT(@text, LEN(@text) - 1);
+
+      EXEC [dbo].[usp_SQL2string]
+	      @SqlString = @query,
+	      @num_rows = @num_rows,
+	      @num_cols = @num_cols,
+        @col_width = @col_width,
+        @list_width = N'',
+        @response = @message OUTPUT
+
+      SET @message_url = CONCAT(@url, N'sendMessage');
+      SET @json_chat = N'{}';
+      SET @json_chat = JSON_MODIFY(@json_chat, '$.text', @message);
+      SET @json_chat = JSON_MODIFY(@json_chat, '$.chat_id', @chat_id); 
+      SET @json_chat = JSON_MODIFY(@json_chat, '$.parse_mode', 'Markdown'); 
+
+      EXEC [dbo].[usp_HttpPost]
+        @url = @message_url,
+        @headerXml = @http_headers,
+        @requestBody = @json_chat,
+        @success = @success OUTPUT,
+        @response = @response OUTPUT,
+        @error = @error OUTPUT;
+
+    END;
 
   END;
 
@@ -319,6 +326,7 @@ CREATE   PROCEDURE [dbo].[usp_get_settings]
   ,@num_rows bigint = NULL OUTPUT
   ,@num_cols bigint = NULL OUTPUT
   ,@col_width bigint = NULL OUTPUT
+  ,@bot_name nvarchar(max) = NULL OUTPUT
 )
 AS
 BEGIN
@@ -359,6 +367,7 @@ BEGIN
   SELECT 
     @url = [bot_token]
     ,@http_headers = [http_headers]
+    ,@bot_name = [bot_name]
   FROM
   (
     SELECT 
@@ -373,6 +382,7 @@ BEGIN
     (
       [bot_token]
       ,[http_headers]
+      ,[bot_name]
     )
   ) [pvt];
 
@@ -382,7 +392,6 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-
 CREATE PROCEDURE [dbo].[usp_GetChatId]
 (
   @chat_id bigint OUTPUT
@@ -422,6 +431,50 @@ BEGIN
     ,[update_id] bigint N'$.update_id'
   )
   ORDER BY [update_id] DESC;
+
+END;
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   PROCEDURE [dbo].[usp_get_bot_name]
+(
+  @bot_name nvarchar(max) OUTPUT
+)
+AS
+BEGIN
+  SET NOCOUNT ON;
+
+  DECLARE 
+    @url nvarchar(max)
+    ,@http_headers xml
+    ,@json_chat nvarchar(max) = '{}'
+    ,@message_url nvarchar(max)
+    ,@success bit
+    ,@response nvarchar(max)
+    ,@error nvarchar(max);	  
+
+  EXEC [dbo].[usp_get_settings]
+    @url = @url OUTPUT 
+    ,@http_headers = @http_headers OUTPUT;
+
+  SET @message_url = CONCAT(@url, 'getMe');
+
+  EXEC [dbo].[usp_HttpPost]
+	  @url = @message_url,
+	  @headerXml = @http_headers,
+	  @requestBody = @json_chat,
+	  @success = @success OUTPUT,
+	  @response = @response OUTPUT,
+	  @error = @error OUTPUT;
+
+  SELECT TOP (1) @bot_name = [username]
+  FROM OPENJSON (@response, N'$.result')
+  WITH 
+  (
+    [username] nvarchar(max) N'$.username'
+  );
 
 END;
 GO

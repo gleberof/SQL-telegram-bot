@@ -14,10 +14,10 @@ To send and receive messages to/from telegram bot natively with MS SQL server (b
 3. Send a message to your bot directly in Telegram (it will help to identify your chat ID). If you're going to use the bot within a group - you need to set up the bot as one of the admins of that group.
 4. Open ```Configure.sql```. Set bot_token given by [Bot Father](https://telegram.me/botfather). It will automatically assign chat_id from the last message to the bot or chat.
 5. To be able to run SELECT and you need to authorize you account with bot:
-  * Find your bot in telegram or open the chat channel where the bot already added
-  * Send the ```/request_access@[your_bot_name]``` command to bot - it's add your telegram ID to usesr table
-  * Open telegram.dbo.users table and find your nickname and set flag [authorized] to 1
-  * Now you can do selects with bot
+   * Find your bot in telegram or open the chat channel where the bot already added
+   * Send the ```/request_access@[your_bot_name]``` command to bot - it's add your telegram ID to usesr table
+   * Open telegram.dbo.users table and find your nickname and set flag [authorized] to 1
+   * Now you can do selects with bot
 
 
 # How to use

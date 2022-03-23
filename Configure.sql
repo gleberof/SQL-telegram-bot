@@ -83,6 +83,8 @@ INSERT [dbo].[commands] ([command], [query], [description], [columns_width]) VAL
 GO
 INSERT [dbo].[commands] ([command], [query], [description], [columns_width]) VALUES (N'request_access', N'EXEC [dbo].[usp_request_access]', N'Request access to use commands', N'12')
 GO
+INSERT [dbo].[commands] ([command], [query], [description], [columns_width]) VALUES (N'Ping', N'EXEC [dbo].[ping] @param', N'Ping Specified Server e.e. /ping@Telegram_bot servername01', N'60')
+GO
 
 
 INSERT [monitor].[threshold] ([counter], [threshold], [type]) VALUES (N'cpu_usage', CAST(80.00 AS Decimal(18, 2)), N'percent')

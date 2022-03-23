@@ -21,8 +21,8 @@ namespace SqlTelegram
           out SqlString response,
           out SqlString error)
         {
-            List<KeyValuePair<string, string>> headers = ClrHttp.GetHeaders(headerXml);
-            HttpResult httpResult = HttpLayer.Get(url.IsNull ? (string)null : url.Value, (IEnumerable<KeyValuePair<string, string>>)headers);
+            List<KeyValuePair<string, string>> headers = GetHeaders(headerXml);
+            var httpResult = HttpLayer.Get(url.IsNull ? (string)null : url.Value, (IEnumerable<KeyValuePair<string, string>>)headers);
             success = (SqlBoolean)httpResult.Success;
             response = (SqlString)httpResult.Response;
             error = (SqlString)httpResult.Error;
@@ -40,7 +40,7 @@ namespace SqlTelegram
             List<KeyValuePair<string, string>> headers = ClrHttp.GetHeaders(headerXml);
             string url1 = url.IsNull ? (string)null : url.Value;
             string requestBody1 = requestBody.IsNull ? (string)null : requestBody.Value;
-            HttpResult httpResult = HttpLayer.Post(url1, (IEnumerable<KeyValuePair<string, string>>)headers, requestBody1);
+            var httpResult = HttpLayer.Post(url1, (IEnumerable<KeyValuePair<string, string>>)headers, requestBody1);
             success = (SqlBoolean)httpResult.Success;
             response = (SqlString)httpResult.Response;
             error = (SqlString)httpResult.Error;
@@ -55,6 +55,8 @@ namespace SqlTelegram
         {
 
             string result = "";
+            string variable = "";
+
             response = (SqlString)"";
             Dictionary<string, object> obj = JObject.FromObject(JsonConvert.DeserializeObject(json.ToString())).ToObject<Dictionary<string, object>>();
 
@@ -71,7 +73,7 @@ namespace SqlTelegram
                     Dictionary<string, object> chat = JObject.FromObject(message["chat"]).ToObject<Dictionary<string, object>>();
                     if (message.ContainsKey("entities") & chat["id"].ToString()==chat_id.ToString())
                     {
-                        string text = message["text"].ToString();
+                        string text = message["text"].ToString(); //get command
                         JArray entities = (JArray)message["entities"];
                         foreach (JToken elm in entities)
                         {
@@ -81,6 +83,7 @@ namespace SqlTelegram
                                 if (command.Split('@')[1] == bot_name.ToString())
                                 {
                                     result = command.Split('@')[0].Substring(1);
+                                    if (text.Split(' ').Length>1) variable = text.Split(' ')[1]; //get variable to pass to command
                                     break;
                                 }
 
@@ -106,18 +109,20 @@ namespace SqlTelegram
                         //txt_query = (SqlString)(string)sqlCommand.ExecuteScalar();
 
                         SqlCommand sqlCommand = new SqlCommand("SELECT [query], [columns_width] FROM [dbo].[commands] WHERE [command] = @command", connection);
+
                         sqlCommand.Parameters.AddWithValue("@command", result);
                         SqlDataReader reader = sqlCommand.ExecuteReader();
                         while (reader.Read())
                         {
                             txt_query = reader["query"].ToString();
                             columns_width = reader["columns_width"].ToString();
+
                         }
                         reader.Close();
                     }
                     if (txt_query != "")
                     {
-                        SQL2string(txt_query, 10, 6, 10, columns_width, out response);
+                        SQL2string(txt_query, variable, 10, 6, 10, columns_width, out response);
                     }
                 }
                 catch { }
@@ -127,12 +132,14 @@ namespace SqlTelegram
         [SqlProcedure]
         public static void SQL2string(
             SqlString txt_query,
+            String variable,
             int num_rows,
             int num_cols,
             int col_width,
             SqlString list_width,
             out SqlString response)
         {
+
             bool cw = list_width.ToString().Length > 0;
 
             List<int> widths = new List<int>();
@@ -154,6 +161,10 @@ namespace SqlTelegram
             using (var con = OpenContextConnection())
             {
                 var cmd = new SqlCommand(txt_query.ToString(), con);
+                if (variable.Trim().Length > 0) cmd.Parameters.AddWithValue("@param",variable);
+
+                //SqlContext.Pipe.Send(cmd.CommandText.ToString());
+
                 var da = new SqlDataAdapter(cmd);
                 da.Fill(dt);
             }

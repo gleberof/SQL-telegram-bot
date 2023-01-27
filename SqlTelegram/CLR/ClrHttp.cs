@@ -116,7 +116,6 @@ namespace SqlTelegram
                         {
                             txt_query = reader["query"].ToString();
                             columns_width = reader["columns_width"].ToString();
-
                         }
                         reader.Close();
                     }
@@ -160,57 +159,84 @@ namespace SqlTelegram
             var dt = new DataTable();
             using (var con = OpenContextConnection())
             {
-                var cmd = new SqlCommand(txt_query.ToString(), con);
-                if (variable.Trim().Length > 0) cmd.Parameters.AddWithValue("@param",variable);
+                try
+                {
+                    var cmd = new SqlCommand(txt_query.ToString(), con);
+                    if (variable.Trim().Length > 0) cmd.Parameters.AddWithValue("@param",variable);
 
-                //SqlContext.Pipe.Send(cmd.CommandText.ToString());
+                    SqlContext.Pipe.Send("SQL Command:" + cmd.CommandText.ToString());
+                    SqlContext.Pipe.Send("Parameter Value:" + cmd.Parameters[0].Value.ToString());
 
-                var da = new SqlDataAdapter(cmd);
-                da.Fill(dt);
+                    var da = new SqlDataAdapter(cmd);
+                    da.Fill(dt);
+
+                    SqlContext.Pipe.Send("Rows returned:" + dt.Rows.Count.ToString());
+                    SqlContext.Pipe.Send("First Value:" + dt.Rows[0].ItemArray[0].ToString());
+                }
+                catch (Exception e)
+                {
+                    SqlContext.Pipe.Send(e.Message);
+                } 
             }
 
-            // construct line separator
-            var lin_sep = crn;
-            foreach (DataColumn col in dt.Columns)
+            try
             {
-                int wd = cw ? widths[col_counter] : col_width;
-                lin_sep += new String(ln.ToCharArray()[0], wd) + crn;
-                col_counter++;
-                if (col_counter > num_cols) break;
-            }
-            //lin_sep += nl;
-
-            // Construct the header
-            result += cl;
-            col_counter = 0;
-            foreach (DataColumn col in dt.Columns)
-            {
-                int wd = cw ? widths[col_counter] : col_width;
-                result += FormatString(col.ColumnName, wd) + cl;
-                col_counter++;
-                if (col_counter > num_cols) break;
-            }
-            result += nl + lin_sep;
-
-            // Construct the body
-            foreach (DataRow row in dt.Rows)
-            {
-                col_counter = 0;
-                result += nl + cl;
+                SqlContext.Pipe.Send("Separator");
+                // construct line separator
+                var lin_sep = crn;
                 foreach (DataColumn col in dt.Columns)
                 {
+                    SqlContext.Pipe.Send("Column Name:" + col.ToString());
                     int wd = cw ? widths[col_counter] : col_width;
-                    result += FormatString(row[col.ColumnName].ToString(), wd) + cl;
+                    lin_sep += new String(ln.ToCharArray()[0], wd) + crn;
                     col_counter++;
                     if (col_counter > num_cols) break;
                 }
+                //lin_sep += nl;
 
-                row_counter++;
-                if (row_counter > num_rows) break;
+                SqlContext.Pipe.Send("Header");
+                // Construct the header
+                result += cl;
+                col_counter = 0;
+                foreach (DataColumn col in dt.Columns)
+                {
+                    int wd = cw ? widths[col_counter] : col_width;
+                    result += FormatString(col.ColumnName, wd) + cl;
+                    col_counter++;
+                    if (col_counter > num_cols) break;
+                }
+                result += nl + lin_sep;
 
+                SqlContext.Pipe.Send("Body");
+                // Construct the body
+                foreach (DataRow row in dt.Rows)
+                {
+                    col_counter = 0;
+                    result += nl + cl;
+                    foreach (DataColumn col in dt.Columns)
+                    {
+                        int wd = cw ? widths[col_counter] : col_width;
+                        result += FormatString(row[col.ColumnName].ToString(), wd) + cl;
+                        col_counter++;
+                        if (col_counter > num_cols) break;
+                    }
+
+                    row_counter++;
+                    if (row_counter > num_rows) break;
+
+                }
+
+                result += nl + "```";
+
+                SqlContext.Pipe.Send("Formated output:" + result);
+            }
+            catch (Exception e)
+            {
+                SqlContext.Pipe.Send("ERROR");
+                SqlContext.Pipe.Send("MESSAGE\n" + e.Message);
+                SqlContext.Pipe.Send("STACK TRACE \n" + e.StackTrace);
             }
 
-            result += nl + "```";
             response = result;
         }
 

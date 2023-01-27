@@ -21,8 +21,8 @@ namespace SqlTelegram
           out SqlString response,
           out SqlString error)
         {
-            List<KeyValuePair<string, string>> headers = ClrHttp.GetHeaders(headerXml);
-            HttpResult httpResult = HttpLayer.Get(url.IsNull ? (string)null : url.Value, (IEnumerable<KeyValuePair<string, string>>)headers);
+            List<KeyValuePair<string, string>> headers = GetHeaders(headerXml);
+            var httpResult = HttpLayer.Get(url.IsNull ? (string)null : url.Value, (IEnumerable<KeyValuePair<string, string>>)headers);
             success = (SqlBoolean)httpResult.Success;
             response = (SqlString)httpResult.Response;
             error = (SqlString)httpResult.Error;
@@ -40,7 +40,7 @@ namespace SqlTelegram
             List<KeyValuePair<string, string>> headers = ClrHttp.GetHeaders(headerXml);
             string url1 = url.IsNull ? (string)null : url.Value;
             string requestBody1 = requestBody.IsNull ? (string)null : requestBody.Value;
-            HttpResult httpResult = HttpLayer.Post(url1, (IEnumerable<KeyValuePair<string, string>>)headers, requestBody1);
+            var httpResult = HttpLayer.Post(url1, (IEnumerable<KeyValuePair<string, string>>)headers, requestBody1);
             success = (SqlBoolean)httpResult.Success;
             response = (SqlString)httpResult.Response;
             error = (SqlString)httpResult.Error;
@@ -55,6 +55,8 @@ namespace SqlTelegram
         {
 
             string result = "";
+            string variable = "";
+
             response = (SqlString)"";
             Dictionary<string, object> obj = JObject.FromObject(JsonConvert.DeserializeObject(json.ToString())).ToObject<Dictionary<string, object>>();
 
@@ -71,7 +73,7 @@ namespace SqlTelegram
                     Dictionary<string, object> chat = JObject.FromObject(message["chat"]).ToObject<Dictionary<string, object>>();
                     if (message.ContainsKey("entities") & chat["id"].ToString()==chat_id.ToString())
                     {
-                        string text = message["text"].ToString();
+                        string text = message["text"].ToString(); //get command
                         JArray entities = (JArray)message["entities"];
                         foreach (JToken elm in entities)
                         {
@@ -81,6 +83,7 @@ namespace SqlTelegram
                                 if (command.Split('@')[1] == bot_name.ToString())
                                 {
                                     result = command.Split('@')[0].Substring(1);
+                                    if (text.Split(' ').Length>1) variable = text.Split(' ')[1]; //get variable to pass to command
                                     break;
                                 }
 
@@ -106,6 +109,7 @@ namespace SqlTelegram
                         //txt_query = (SqlString)(string)sqlCommand.ExecuteScalar();
 
                         SqlCommand sqlCommand = new SqlCommand("SELECT [query], [columns_width] FROM [dbo].[commands] WHERE [command] = @command", connection);
+
                         sqlCommand.Parameters.AddWithValue("@command", result);
                         SqlDataReader reader = sqlCommand.ExecuteReader();
                         while (reader.Read())
@@ -117,7 +121,7 @@ namespace SqlTelegram
                     }
                     if (txt_query != "")
                     {
-                        SQL2string(txt_query, 10, 6, 10, columns_width, out response);
+                        SQL2string(txt_query, variable, 10, 6, 10, columns_width, out response);
                     }
                 }
                 catch { }
@@ -127,12 +131,14 @@ namespace SqlTelegram
         [SqlProcedure]
         public static void SQL2string(
             SqlString txt_query,
+            String variable,
             int num_rows,
             int num_cols,
             int col_width,
             SqlString list_width,
             out SqlString response)
         {
+
             bool cw = list_width.ToString().Length > 0;
 
             List<int> widths = new List<int>();
@@ -153,53 +159,84 @@ namespace SqlTelegram
             var dt = new DataTable();
             using (var con = OpenContextConnection())
             {
-                var cmd = new SqlCommand(txt_query.ToString(), con);
-                var da = new SqlDataAdapter(cmd);
-                da.Fill(dt);
+                try
+                {
+                    var cmd = new SqlCommand(txt_query.ToString(), con);
+                    if (variable.Trim().Length > 0) cmd.Parameters.AddWithValue("@param",variable);
+
+                    SqlContext.Pipe.Send("SQL Command:" + cmd.CommandText.ToString());
+                    SqlContext.Pipe.Send("Parameter Value:" + cmd.Parameters[0].Value.ToString());
+
+                    var da = new SqlDataAdapter(cmd);
+                    da.Fill(dt);
+
+                    SqlContext.Pipe.Send("Rows returned:" + dt.Rows.Count.ToString());
+                    SqlContext.Pipe.Send("First Value:" + dt.Rows[0].ItemArray[0].ToString());
+                }
+                catch (Exception e)
+                {
+                    SqlContext.Pipe.Send(e.Message);
+                } 
             }
 
-            // construct line separator
-            var lin_sep = crn;
-            foreach (DataColumn col in dt.Columns)
+            try
             {
-                int wd = cw ? widths[col_counter] : col_width;
-                lin_sep += new String(ln.ToCharArray()[0], wd) + crn;
-                col_counter++;
-                if (col_counter > num_cols) break;
-            }
-            //lin_sep += nl;
-
-            // Construct the header
-            result += cl;
-            col_counter = 0;
-            foreach (DataColumn col in dt.Columns)
-            {
-                int wd = cw ? widths[col_counter] : col_width;
-                result += FormatString(col.ColumnName, wd) + cl;
-                col_counter++;
-                if (col_counter > num_cols) break;
-            }
-            result += nl + lin_sep;
-
-            // Construct the body
-            foreach (DataRow row in dt.Rows)
-            {
-                col_counter = 0;
-                result += nl + cl;
+                SqlContext.Pipe.Send("Separator");
+                // construct line separator
+                var lin_sep = crn;
                 foreach (DataColumn col in dt.Columns)
                 {
+                    SqlContext.Pipe.Send("Column Name:" + col.ToString());
                     int wd = cw ? widths[col_counter] : col_width;
-                    result += FormatString(row[col.ColumnName].ToString(), wd) + cl;
+                    lin_sep += new String(ln.ToCharArray()[0], wd) + crn;
                     col_counter++;
                     if (col_counter > num_cols) break;
                 }
+                //lin_sep += nl;
 
-                row_counter++;
-                if (row_counter > num_rows) break;
+                SqlContext.Pipe.Send("Header");
+                // Construct the header
+                result += cl;
+                col_counter = 0;
+                foreach (DataColumn col in dt.Columns)
+                {
+                    int wd = cw ? widths[col_counter] : col_width;
+                    result += FormatString(col.ColumnName, wd) + cl;
+                    col_counter++;
+                    if (col_counter > num_cols) break;
+                }
+                result += nl + lin_sep;
 
+                SqlContext.Pipe.Send("Body");
+                // Construct the body
+                foreach (DataRow row in dt.Rows)
+                {
+                    col_counter = 0;
+                    result += nl + cl;
+                    foreach (DataColumn col in dt.Columns)
+                    {
+                        int wd = cw ? widths[col_counter] : col_width;
+                        result += FormatString(row[col.ColumnName].ToString(), wd) + cl;
+                        col_counter++;
+                        if (col_counter > num_cols) break;
+                    }
+
+                    row_counter++;
+                    if (row_counter > num_rows) break;
+
+                }
+
+                result += nl + "```";
+
+                SqlContext.Pipe.Send("Formated output:" + result);
+            }
+            catch (Exception e)
+            {
+                SqlContext.Pipe.Send("ERROR");
+                SqlContext.Pipe.Send("MESSAGE\n" + e.Message);
+                SqlContext.Pipe.Send("STACK TRACE \n" + e.StackTrace);
             }
 
-            result += nl + "```";
             response = result;
         }
 

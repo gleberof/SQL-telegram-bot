@@ -705,6 +705,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 CREATE PROCEDURE [dbo].[usp_SQL2string]
 	@SqlString [nvarchar](max),
+  @Variable [nvarchar](max),
 	@num_rows [int],
 	@num_cols [int],
 	@col_width [int],
@@ -752,6 +753,38 @@ BEGIN
   END;
 
 END;
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[ping] (@Server VARCHAR(max))
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @response VARCHAR(max),
+		@cmd VARCHAR(max)
+
+	SELECT @cmd = CONCAT (
+			'EXEC master..xp_cmdshell "ping -n 1 ',
+			@Server,
+			'"'
+			)
+
+	DECLARE @Results AS TABLE (
+		id INT identity(1, 1),
+		res NVARCHAR(200)
+		)
+
+	INSERT INTO @Results
+	EXEC (@cmd)
+
+	SELECT concat('Response:', res)
+	FROM @Results
+	WHERE res LIKE 'Reply%' or res like '%could not find host%'
+
+END
 GO
 SET ANSI_NULLS ON
 GO
